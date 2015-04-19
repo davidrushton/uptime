@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands;
 
 use Exception;
+use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 use Psr\Log\LoggerInterface;
@@ -44,6 +45,10 @@ class Ping extends Command {
         $port = 80;
         $timeout = 6;
 
+        if ( $this->option('debug') ) {
+            $this->log->debug('Checking '.$host.':'.$port);
+        }
+
         try {
             $check = fsockopen($host, $port, $errno, $errstr, $timeout);
 
@@ -54,6 +59,13 @@ class Ping extends Command {
         } catch ( Exception $e ) {
             $this->log->alert('Network down '.$e->getMessage());
         }
+    }
+
+    public function getOptions()
+    {
+        return [
+            ['debug', null, InputOption::VALUE_NONE, 'Log when checking host']
+        ];
     }
 
 }
